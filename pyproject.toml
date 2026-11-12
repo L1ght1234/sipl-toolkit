@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sipl-toolkit"
+version = "0.1.0"
+description = "SIPL Language Toolkit: formal syntax, AST, interpreter, visualization, and semantic terms"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Artem Sydorenko" }
+]
+dependencies = [
+    "lark>=1.1.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+sipl = "sipl.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v"

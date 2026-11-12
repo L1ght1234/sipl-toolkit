@@ -1,0 +1,69 @@
+?start: prog
+
+prog: KW_BEGIN stm KW_END -> prog_rule
+
+?stm: stm_item ";" stm    -> seq_stm
+    | stm_item
+
+?stm_item: assign_stm
+         | if_stm
+         | while_stm
+         | block_stm
+         | skip_stm
+
+assign_stm: var ":=" aexp
+
+if_stm: KW_IF bexp KW_THEN stm_item KW_ELSE stm_item
+
+while_stm: KW_WHILE bexp KW_DO stm_item
+
+block_stm: KW_BEGIN stm KW_END
+
+skip_stm: KW_SKIP
+
+?bexp: bexp OR_OP b_not   -> or_bexp
+     | b_not
+
+?b_not: NOT_OP b_not      -> not_bexp
+      | b_atom
+
+?b_atom: aexp CMP_OP aexp -> cmp_bexp
+       | "(" bexp ")"     -> paren_bexp
+
+?aexp: aexp ADD_OP a_mul  -> add_aexp
+     | a_mul
+
+?a_mul: a_mul MUL_OP a_atom -> mul_aexp
+      | a_atom
+
+?a_atom: num
+       | var
+       | "(" aexp ")"     -> paren_aexp
+
+num: NUMBER               -> pos_num
+   | "-" NUMBER           -> neg_num
+
+var: IDENT                -> var_node
+
+KW_BEGIN.2: "begin" /\b/
+KW_END.2:   "end" /\b/
+KW_IF.2:    "if" /\b/
+KW_THEN.2:  "then" /\b/
+KW_ELSE.2:  "else" /\b/
+KW_WHILE.2: "while" /\b/
+KW_DO.2:    "do" /\b/
+KW_SKIP.2:  "skip" /\b/
+
+ADD_OP: "+" | "-"
+MUL_OP.2: "*" | "×" | "div" /\b/ | "mod" /\b/
+CMP_OP: ">=" | "<=" | "=" | ">" | "<"
+NOT_OP.2: "¬" | "!" | "not" /\b/
+OR_OP.2:  "∨" | "||" | "or" /\b/
+
+IDENT.1: /[A-Za-z_][A-Za-z0-9_]*/
+NUMBER: /0|[1-9][0-9]*/
+
+COMMENT: /\/\/[^\n]*/ | /#[^\n]*/
+%import common.WS
+%ignore WS
+%ignore COMMENT
